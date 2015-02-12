@@ -2,6 +2,8 @@
 
 Translated by OOPer in cooperation with shlab.jp, on 2014/12/28.
 
+Adapted to Swift 1.2 reuquirements on 2015/2/12.
+
 Based on
 <https://developer.apple.com/library/ios/samplecode/GLGravity/Introduction/Intro.html#//apple_ref/doc/uid/DTS40007327>
 2010-07-06.

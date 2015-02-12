@@ -64,7 +64,7 @@ class GLGravityAppDelegate: NSObject, UIApplicationDelegate {
     private var manager: CMMotionManager = CMMotionManager()
     private var accel: [Double] = [0, 0, 0]
     
-    @IBOutlet var window: UIWindow!
+    @IBOutlet var window: UIWindow?
     @IBOutlet var glView: GLGravityView!
     
     

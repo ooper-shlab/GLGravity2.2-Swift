@@ -106,7 +106,7 @@ class GLGravityView: UIView {
     required init(coder: NSCoder) {
         
         super.init(coder: coder)
-        let eaglLayer = self.layer as CAEAGLLayer
+        let eaglLayer = self.layer as! CAEAGLLayer
         
         eaglLayer.opaque = true
         eaglLayer.drawableProperties = [kEAGLDrawablePropertyRetainedBacking: false,
@@ -279,7 +279,7 @@ class GLGravityView: UIView {
         glBindRenderbufferOES(GLenum(GL_RENDERBUFFER_OES), viewRenderbuffer)
         // This call associates the storage for the current render buffer with the EAGLDrawable (our CAEAGLLayer)
         // allowing us to draw into a buffer that will later be rendered to screen wherever the layer is (which corresponds with our view).
-        context.renderbufferStorage(Int(GL_RENDERBUFFER_OES), fromDrawable: self.layer as EAGLDrawable)
+        context.renderbufferStorage(Int(GL_RENDERBUFFER_OES), fromDrawable: self.layer as! EAGLDrawable)
         glFramebufferRenderbufferOES(GLenum(GL_FRAMEBUFFER_OES), GLenum(GL_COLOR_ATTACHMENT0_OES), GLenum(GL_RENDERBUFFER_OES), viewRenderbuffer)
         
         glGetRenderbufferParameterivOES(GLenum(GL_RENDERBUFFER_OES), GLenum(GL_RENDERBUFFER_WIDTH_OES), &backingWidth)
