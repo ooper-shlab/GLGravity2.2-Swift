@@ -59,8 +59,8 @@
 import UIKit
 import OpenGLES
 
-private func squaredSumf(x: GLfloat, y: GLfloat, z: GLfloat) -> GLfloat {return x*x + y*y + z*z}
-private func squaredSum(x: Double, y: Double, z: Double) -> Double {return x*x + y*y + z*z}
+private func squaredSumf(x: GLfloat, _ y: GLfloat, _ z: GLfloat) -> GLfloat {return x*x + y*y + z*z}
+private func squaredSum(x: Double, _ y: Double, _ z: Double) -> Double {return x*x + y*y + z*z}
 
 @objc(GLGravityView)
 class GLGravityView: UIView {
@@ -187,10 +187,7 @@ class GLGravityView: UIView {
         var length: GLfloat = 0
         
         //Make sure we have a big enough acceleration vector
-        //###Expression is too complex...
-        //        length = sqrtf(GLfloat(accel[0] * accel[0] + accel[1] * accel[1] + accel[2] * accel[2]))
-        var length2 = GLfloat(squaredSum(accel[0], accel[1], accel[2]))
-        length = sqrtf(length2)
+        length = sqrtf(GLfloat(squaredSum(accel[0], accel[1], accel[2])))
         
         //Setup model view matrix
         glLoadIdentity()
