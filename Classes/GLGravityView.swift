@@ -339,11 +339,11 @@ class GLGravityView: UIView {
                 // if the system version runtime check for CADisplayLink exists in -initWithCoder:. The runtime check ensures this code will
                 // not be called in system versions earlier than 3.1.
                 
-                displayLink = CADisplayLink(target: self, selector: "drawView")
+                displayLink = CADisplayLink(target: self, selector: #selector(GLGravityView.drawView))
                 displayLink.frameInterval = animationFrameInterval
                 displayLink.addToRunLoop(NSRunLoop.currentRunLoop(), forMode: NSDefaultRunLoopMode)
             } else {
-                animationTimer = NSTimer.scheduledTimerWithTimeInterval(NSTimeInterval((1.0 / 60.0) * NSTimeInterval(animationFrameInterval)), target: self, selector: "drawView", userInfo: nil, repeats: true)
+                animationTimer = NSTimer.scheduledTimerWithTimeInterval(NSTimeInterval((1.0 / 60.0) * NSTimeInterval(animationFrameInterval)), target: self, selector: #selector(GLGravityView.drawView), userInfo: nil, repeats: true)
             }
             
             animating = true
