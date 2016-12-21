@@ -61,56 +61,12 @@ import CoreMotion
 @UIApplicationMain
 @objc(GLGravityAppDelegate)
 class GLGravityAppDelegate: NSObject, UIApplicationDelegate {
-    private var manager: CMMotionManager = CMMotionManager()
-    private var accel: [Double] = [0, 0, 0]
     
-    @IBOutlet var window: UIWindow?
-    @IBOutlet var glView: GLGravityView!
-    
-    
-    // CONSTANTS
-    final let kAccelerometerFrequency = 100.0 // Hz
-    final let kFilteringFactor = 0.1
-    
-    
-    func applicationDidFinishLaunching(application: UIApplication) {
-        glView.startAnimation()
-        
-        //Configure and start accelerometer
-        //http://d.hatena.ne.jp/hiroroEX/20130320/1363756687
-        manager.accelerometerUpdateInterval = 1.0 / kAccelerometerFrequency
-        manager.startAccelerometerUpdatesToQueue(NSOperationQueue.currentQueue()!, withHandler: accelerometerHandler)
-        
-    }
-    
-    func applicationWillResignActive(application: UIApplication) {
-        glView.stopAnimation()
-        manager.stopAccelerometerUpdates()
-    }
-    
-    func applicationDidBecomeActive(application: UIApplication) {
-        glView.startAnimation()
-        manager.startAccelerometerUpdatesToQueue(NSOperationQueue.currentQueue()!, withHandler: accelerometerHandler)
-    }
-    
-    func applicationWillTerminate(application: UIApplication) {
-        glView.stopAnimation()
-        manager.stopAccelerometerUpdates()
-    }
-    
-    
-    private func accelerometerHandler(data: CMAccelerometerData?, error: NSError?) {
-        if error == nil {
-            //Use a basic low-pass filter to only keep the gravity in the accelerometer values
-            accel[0] = data!.acceleration.x * kFilteringFactor + accel[0] * (1.0 - kFilteringFactor)
-            accel[1] = data!.acceleration.y * kFilteringFactor + accel[1] * (1.0 - kFilteringFactor)
-            accel[2] = data!.acceleration.z * kFilteringFactor + accel[2] * (1.0 - kFilteringFactor)
-            
-            //Update the accelerometer values for the view
-            glView.accel = accel
-        } else {
-            NSLog("accelerometer error: %@", error!)
-        }
+    var window: UIWindow?
+
+    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey : Any]? = nil) -> Bool {
+        //### Moved some functionalities into GLGravityViewController, do noting here.
+        return true
     }
     
 }

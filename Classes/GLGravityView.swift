@@ -59,8 +59,7 @@
 import UIKit
 import OpenGLES
 
-private func squaredSumf(x: GLfloat, _ y: GLfloat, _ z: GLfloat) -> GLfloat {return x*x + y*y + z*z}
-private func squaredSum(x: Double, _ y: Double, _ z: Double) -> Double {return x*x + y*y + z*z}
+private func squaredSum<T: BinaryFloatingPoint>(_ x: T, _ y: T, _ z: T) -> T {return x*x + y*y + z*z}
 
 @objc(GLGravityView)
 class GLGravityView: UIView {
@@ -84,7 +83,7 @@ class GLGravityView: UIView {
     // The NSTimer class is used only as fallback when running on a pre 3.1 device where CADisplayLink
     // isn't available.
     private var displayLink: CADisplayLink!
-    private var animationTimer: NSTimer!
+    private var animationTimer: Timer!
     
     var accel: [Double] = [0, 0, 0]
     
@@ -93,12 +92,12 @@ class GLGravityView: UIView {
     private let kTeapotScale: GLfloat = 3.0
     
     // MACROS
-    private func DEGREES_TO_RADIANS(angle: GLfloat) -> GLfloat {return (angle / 180.0 * GLfloat(M_PI))}
+    private func DEGREES_TO_RADIANS(_ angle: GLfloat) -> GLfloat {return (angle / 180.0 * GLfloat(M_PI))}
     
     
     // Implement this to override the default layer class (which is [CALayer class]).
     // We do this so that our view will be backed by a layer that is capable of OpenGL ES rendering.
-    override class func layerClass() -> AnyClass {
+    override class var layerClass : AnyClass {
         return CAEAGLLayer.self
     }
     
@@ -108,13 +107,13 @@ class GLGravityView: UIView {
         super.init(coder: coder)
         let eaglLayer = self.layer as! CAEAGLLayer
         
-        eaglLayer.opaque = true
+        eaglLayer.isOpaque = true
         eaglLayer.drawableProperties = [kEAGLDrawablePropertyRetainedBacking: false,
             kEAGLDrawablePropertyColorFormat: kEAGLColorFormatRGBA8]
         
-        context = EAGLContext(API: .OpenGLES1)
+        context = EAGLContext(api: .openGLES1)
         
-        if context == nil || !EAGLContext.setCurrentContext(context) {
+        if context == nil || !EAGLContext.setCurrent(context) {
             fatalError("EAGLContext.setCurrentContext(context) failed")
         }
         
@@ -178,7 +177,7 @@ class GLGravityView: UIView {
     // Updates the OpenGL view
     func drawView() {
         // Make sure that you are drawing to the current context
-        EAGLContext.setCurrentContext(context)
+        EAGLContext.setCurrent(context)
         
         glBindFramebufferOES(GLenum(GL_FRAMEBUFFER_OES), viewFramebuffer)
         glClearColor(0.0, 0.0, 0.0, 1.0)
@@ -215,7 +214,7 @@ class GLGravityView: UIView {
             matrix[1*4+2] = -GLfloat(accel[1] / accel[2])
             //###Expression is too complex...
             //length = sqrtf(matrix[1][0] * matrix[1][0] + matrix[1][1] * matrix[1][1] + matrix[1][2] * matrix[1][2])
-            length = sqrtf(squaredSumf(matrix[1*4+0], matrix[1*4+1], matrix[1*4+2]))
+            length = sqrtf(squaredSum(matrix[1*4+0], matrix[1*4+1], matrix[1*4+2]))
             matrix[1*4+0] /= length
             matrix[1*4+1] /= length
             matrix[1*4+2] /= length
@@ -261,12 +260,13 @@ class GLGravityView: UIView {
     // This is the perfect opportunity to also update the framebuffer so that it is
     // the same size as our display area.
     override func layoutSubviews() {
-        EAGLContext.setCurrentContext(context)
+        EAGLContext.setCurrent(context)
         self.destroyFramebuffer()
         self.createFramebuffer()
         self.drawView()
     }
     
+    @discardableResult
     private func createFramebuffer() -> Bool {
         // Generate IDs for a framebuffer object and a color renderbuffer
         glGenFramebuffersOES(1, &viewFramebuffer)
@@ -276,7 +276,7 @@ class GLGravityView: UIView {
         glBindRenderbufferOES(GLenum(GL_RENDERBUFFER_OES), viewRenderbuffer)
         // This call associates the storage for the current render buffer with the EAGLDrawable (our CAEAGLLayer)
         // allowing us to draw into a buffer that will later be rendered to screen wherever the layer is (which corresponds with our view).
-        context.renderbufferStorage(Int(GL_RENDERBUFFER_OES), fromDrawable: self.layer as! EAGLDrawable)
+        context.renderbufferStorage(Int(GL_RENDERBUFFER_OES), from: self.layer as! EAGLDrawable)
         glFramebufferRenderbufferOES(GLenum(GL_FRAMEBUFFER_OES), GLenum(GL_COLOR_ATTACHMENT0_OES), GLenum(GL_RENDERBUFFER_OES), viewRenderbuffer)
         
         glGetRenderbufferParameterivOES(GLenum(GL_RENDERBUFFER_OES), GLenum(GL_RENDERBUFFER_WIDTH_OES), &backingWidth)
@@ -341,9 +341,9 @@ class GLGravityView: UIView {
                 
                 displayLink = CADisplayLink(target: self, selector: #selector(GLGravityView.drawView))
                 displayLink.frameInterval = animationFrameInterval
-                displayLink.addToRunLoop(NSRunLoop.currentRunLoop(), forMode: NSDefaultRunLoopMode)
+                displayLink.add(to: .current, forMode: .defaultRunLoopMode)
             } else {
-                animationTimer = NSTimer.scheduledTimerWithTimeInterval(NSTimeInterval((1.0 / 60.0) * NSTimeInterval(animationFrameInterval)), target: self, selector: #selector(GLGravityView.drawView), userInfo: nil, repeats: true)
+                animationTimer = Timer.scheduledTimer(timeInterval: TimeInterval((1.0 / 60.0) * TimeInterval(animationFrameInterval)), target: self, selector: #selector(GLGravityView.drawView), userInfo: nil, repeats: true)
             }
             
             animating = true
@@ -366,8 +366,8 @@ class GLGravityView: UIView {
     
     deinit {
         
-        if EAGLContext.currentContext() === context {
-            EAGLContext.setCurrentContext(nil)
+        if EAGLContext.current() === context {
+            EAGLContext.setCurrent(nil)
         }
         
     }
