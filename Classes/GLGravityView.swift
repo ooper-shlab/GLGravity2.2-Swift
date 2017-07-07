@@ -92,7 +92,7 @@ class GLGravityView: UIView {
     private let kTeapotScale: GLfloat = 3.0
     
     // MACROS
-    private func DEGREES_TO_RADIANS(_ angle: GLfloat) -> GLfloat {return (angle / 180.0 * GLfloat(M_PI))}
+    private func DEGREES_TO_RADIANS(_ angle: GLfloat) -> GLfloat {return (angle / 180.0 * .pi)}
     
     
     // Implement this to override the default layer class (which is [CALayer class]).
