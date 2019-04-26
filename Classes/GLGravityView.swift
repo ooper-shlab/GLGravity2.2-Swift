@@ -175,7 +175,7 @@ class GLGravityView: UIView {
     }
     
     // Updates the OpenGL view
-    func drawView() {
+    @objc func drawView() {
         // Make sure that you are drawing to the current context
         EAGLContext.setCurrent(context)
         
@@ -276,7 +276,7 @@ class GLGravityView: UIView {
         glBindRenderbufferOES(GLenum(GL_RENDERBUFFER_OES), viewRenderbuffer)
         // This call associates the storage for the current render buffer with the EAGLDrawable (our CAEAGLLayer)
         // allowing us to draw into a buffer that will later be rendered to screen wherever the layer is (which corresponds with our view).
-        context.renderbufferStorage(Int(GL_RENDERBUFFER_OES), from: self.layer as! EAGLDrawable)
+        context.renderbufferStorage(Int(GL_RENDERBUFFER_OES), from: (self.layer as! EAGLDrawable))
         glFramebufferRenderbufferOES(GLenum(GL_FRAMEBUFFER_OES), GLenum(GL_COLOR_ATTACHMENT0_OES), GLenum(GL_RENDERBUFFER_OES), viewRenderbuffer)
         
         glGetRenderbufferParameterivOES(GLenum(GL_RENDERBUFFER_OES), GLenum(GL_RENDERBUFFER_WIDTH_OES), &backingWidth)
@@ -309,7 +309,7 @@ class GLGravityView: UIView {
         }
     }
     
-    private dynamic var animationFrameInterval: Int {
+    @objc private dynamic var animationFrameInterval: Int {
         get {
             return _animationFrameInterval
         }
@@ -339,11 +339,11 @@ class GLGravityView: UIView {
                 // if the system version runtime check for CADisplayLink exists in -initWithCoder:. The runtime check ensures this code will
                 // not be called in system versions earlier than 3.1.
                 
-                displayLink = CADisplayLink(target: self, selector: #selector(GLGravityView.drawView))
+                displayLink = CADisplayLink(target: self, selector: #selector(drawView))
                 displayLink.frameInterval = animationFrameInterval
-                displayLink.add(to: .current, forMode: .defaultRunLoopMode)
+                displayLink.add(to: .current, forMode: .default)
             } else {
-                animationTimer = Timer.scheduledTimer(timeInterval: TimeInterval((1.0 / 60.0) * TimeInterval(animationFrameInterval)), target: self, selector: #selector(GLGravityView.drawView), userInfo: nil, repeats: true)
+                animationTimer = Timer.scheduledTimer(timeInterval: TimeInterval((1.0 / 60.0) * TimeInterval(animationFrameInterval)), target: self, selector: #selector(drawView), userInfo: nil, repeats: true)
             }
             
             animating = true
